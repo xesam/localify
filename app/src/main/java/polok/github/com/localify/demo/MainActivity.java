@@ -10,10 +10,11 @@ import com.github.polok.localify.LocalifyClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import polok.github.com.localify.demo.model.User;
-import rx.Subscriber;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -62,14 +63,19 @@ public class MainActivity extends ActionBarActivity {
                 .rx()
                 .loadAssetsFile("test.txt")
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<String>() {
+                .subscribe(new Observer<String>() {
                     @Override
-                    public void onCompleted() {
+                    public void onError(Throwable e) {
 
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onComplete() {
+
+                    }
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
                     }
 
@@ -83,14 +89,19 @@ public class MainActivity extends ActionBarActivity {
                 .rx()
                 .loadRawFile(R.raw.test)
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<String>() {
+                .subscribe(new Observer<String>() {
                     @Override
-                    public void onCompleted() {
+                    public void onError(Throwable e) {
 
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onComplete() {
+
+                    }
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
                     }
 
@@ -105,26 +116,34 @@ public class MainActivity extends ActionBarActivity {
                 .rx()
                 .loadAssetsFile("test.json")
                 .subscribeOn(Schedulers.io())
-                .map(new Func1<String, User>() {
+                .map(new Function<String, User>() {
                     @Override
-                    public User call(String data) {
+                    public User apply(String s) throws Exception {
                         Gson gson = new GsonBuilder().create();
-                        return gson.fromJson(data, User.class);
+                        return gson.fromJson(s, User.class);
                     }
-                }).subscribe(new Subscriber<User>() {
-            @Override
-            public void onCompleted() {
-            }
+                })
+                .subscribe(new Observer<User>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-            @Override
-            public void onError(Throwable e) {
-            }
+                    }
 
-            @Override
-            public void onNext(User user) {
+                    @Override
+                    public void onNext(User user) {
 
-            }
-        });
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
 

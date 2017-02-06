@@ -17,7 +17,7 @@ package com.github.polok.localify.api;
 
 import android.support.annotation.RawRes;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 /**
  *
@@ -25,14 +25,12 @@ import rx.Observable;
 public interface LocalifyRx {
 
     /**
-     *
      * @param fileName
      * @return
      */
     Observable<String> loadAssetsFile(String fileName);
 
     /**
-     *
      * @param fileNameRawId
      * @return
      */

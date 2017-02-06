@@ -15,13 +15,14 @@
  */
 package com.github.polok.localify.utils;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 
 import com.github.polok.localify.LocalifyCallback;
-import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func0;
-import rx.schedulers.Schedulers;
+
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  *
@@ -29,7 +30,6 @@ import rx.schedulers.Schedulers;
 public final class RxUtils {
 
     /**
-     *
      * @param executor
      * @param observable
      * @param callback
@@ -38,52 +38,47 @@ public final class RxUtils {
      */
     public static <R> LocalifyCallback<R> subscribe(final Executor executor, Observable<R> observable, final LocalifyCallback<R> callback) {
         observable
-                .subscribe(
-                        new Action1<R>() {
+                .subscribe(new Consumer<R>() {
+                    @Override
+                    public void accept(final R r) throws Exception {
+                        executor.execute(new Runnable() {
                             @Override
-                            public void call(final R r) {
-                                executor.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        callback.onSuccess(r);
-                                    }
-                                });
-                            }
-                        },
-                        new Action1<Throwable>() {
-                            @Override
-                            public void call(final Throwable throwable) {
-                                executor.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        callback.onError(throwable);
-                                    }
-                                });
+                            public void run() {
+                                callback.onSuccess(r);
                             }
                         });
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(final Throwable throwable) throws Exception {
+                        executor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onError(throwable);
+                            }
+                        });
+                    }
+                });
 
         return callback;
     }
 
     /**
-     *
      * @param <T>
      */
-    public abstract static class DefFunc<T> implements Func0<Observable<T>> {
+    public abstract static class DefFunc<T> implements Callable<Observable<T>> {
         @Override
         public final Observable<T> call() {
             return Observable.just(method());
         }
 
         /**
-         *
          * @return
          */
         public abstract T method();
     }
 
     /**
-     *
      * @param func
      * @param <R>
      * @return

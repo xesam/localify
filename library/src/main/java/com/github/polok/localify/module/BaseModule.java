@@ -24,7 +24,8 @@ import com.github.polok.localify.api.Localify;
 import com.github.polok.localify.api.LocalifyAsync;
 import com.github.polok.localify.api.LocalifyRx;
 import com.github.polok.localify.utils.RxUtils;
-import rx.Observable;
+
+import io.reactivex.Observable;
 
 /**
  * BaseModule.
